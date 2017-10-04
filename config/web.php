@@ -66,13 +66,13 @@ if (YII_ENV_DEV) {
         'class' => 'yii\gii\Module',
         'generators' => [
             'crud' => [
-                'class' => 'yii\gii\generators\crud\Generator',
+                'class' => 'app\gii\crud\Generator',
                 'templates' => [
                     'Workshop LAN' => '@app/gii/crud/default',
                 ]
             ],
             'model' => [
-                'class' => 'yii\gii\generators\model\Generator',
+                'class' => 'app\gii\model\Generator',
                 'templates' => [
                     'Workshop LAN' => '@app/gii/model/default',
                 ]
