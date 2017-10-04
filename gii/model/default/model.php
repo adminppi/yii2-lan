@@ -13,7 +13,6 @@
 /* @var $rules string[] list of validation rules */
 /* @var $relations array list of relations (name => relation declaration) */
 
-$hasNama = false;
 echo "<?php\n";
 ?>
 
@@ -26,7 +25,6 @@ use Yii;
  *
 <?php foreach ($tableSchema->columns as $column): ?>
  * @property <?= "{$column->phpType} \${$column->name}\n" ?>
-<?php if ($column->name == 'nama') { $hasNama = true; } ?>
 <?php endforeach; ?>
 <?php if (!empty($relations)): ?>
  *
@@ -99,7 +97,7 @@ class <?= $className ?> extends <?= '\\' . ltrim($generator->baseClass, '\\') . 
     }
 <?php endif; ?>
 
-<?php if ($hasNama === true): ?>
+<?php if (isset($tableSchema->columns['nama'])): ?>
     /**
      * @inheritdoc
      * @return array untuk dropdown
@@ -108,5 +106,14 @@ class <?= $className ?> extends <?= '\\' . ltrim($generator->baseClass, '\\') . 
     {
         return \yii\helpers\ArrayHelper::map(self::find()->all(), 'id', 'nama');
     }
+<?php endif; ?>
+
+<?php if ($generator->getHasFileType()): ?>
+<?php foreach ($generator->getFilteTypeAttributes() as $key => $value): ?>
+    public function get<?= str_replace(' ', '', ucwords(str_replace('_', ' ', str_replace('id_', '', $value)))); ?>() {
+        return \yii\helpers\Html::img('@web/uploads/' . $this-><?= $value; ?>);
+    }
+
+<?php endforeach ?>
 <?php endif; ?>
 }

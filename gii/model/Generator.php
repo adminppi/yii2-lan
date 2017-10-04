@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\gii\generators\model;
+namespace app\gii\model;
 
 use Yii;
 use yii\db\ActiveQuery;
@@ -301,7 +301,9 @@ class Generator extends \yii\gii\Generator
                     $types['safe'][] = $column->name;
                     break;
                 default: // strings
-                    if ($column->size > 0) {
+                    if ($this->getIsFileType($column->name)) {
+                        $types['file'][] = $column->name;
+                    } elseif ($column->size > 0) {
                         $lengths[$column->size][] = $column->name;
                     } else {
                         $types['string'][] = $column->name;
@@ -847,5 +849,39 @@ class Generator extends \yii\gii\Generator
         }
 
         return false;
+    }
+
+    /**
+     * Check if the attribute will be used as file / binary file name placeholder
+     * based on the field name
+     * @return boolean
+     */
+    public function getIsFileType($attribute)
+    {
+        return preg_match('/^(berkas_|gambar_)/i', $attribute);
+    }
+
+    public function getHasFileType()
+    {
+        foreach ($this->getDbConnection()->getTableSchema($this->tableName)->columns as $column) {
+            if ($this->getIsFileType($column->name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getFilteTypeAttributes()
+    {
+        $attribute = [];
+
+        foreach ($this->getDbConnection()->getTableSchema($this->tableName)->columns as $column) {
+            if ($this->getIsFileType($column->name)) {
+                $attribute[] = $column->name;
+            }
+        }
+
+        return $attribute;
     }
 }

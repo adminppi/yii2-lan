@@ -106,7 +106,18 @@ class <?= $controllerClass ?> extends <?= StringHelper::basename($generator->bas
     {
         $model = new <?= $modelClass ?>();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+<?php if ($generator->getHasFileType()): ?>
+<?php foreach ($generator->getFilteTypeAttributes() as $key => $value): ?>
+            $model-><?= $value; ?> = \yii\web\UploadedFile::getInstance($model, '<?= $value; ?>');
+            if(is_object($model-><?= $value; ?>)){
+                $model-><?= $value ?>->name = $model-><?= $value ?>->baseName . Yii::$app->formatter->asTimestamp(date('Y-d-m h:i:s')) . '.' . $model-><?= $value ?>->extension;
+                $<?= $value ?>_path = 'uploads/'.$model-><?= $value ?>->name;
+                $model-><?= $value ?>->saveAs($<?= $value ?>_path, false);
+            }
+<?php endforeach ?>
+<?php endif; ?>
+            $model->save();
             return $this->redirect(['view', <?= $urlParams ?>]);
         } else {
             return $this->render('create', [
@@ -125,7 +136,8 @@ class <?= $controllerClass ?> extends <?= StringHelper::basename($generator->bas
     {
         $model = $this->findModel(<?= $actionParams ?>);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $model->save();
             return $this->redirect(['view', <?= $urlParams ?>]);
         } else {
             return $this->render('update', [

@@ -34,11 +34,15 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
     foreach ($generator->getColumnNames() as $name) {
 ?>
 
-            [
-                'attribute' => '<?= $name; ?>',
-                'format' => 'raw',
-                'value' => $model-><?= $name; ?>,
-            ],
+                [
+                    'attribute' => '<?= $name; ?>',
+                    'format' => 'raw',
+<?php if ($generator->getIsFileType($name)) { ?>
+                    'value' => $model->get<?= str_replace(' ', '', ucwords(str_replace('_', ' ', str_replace('id_', '', $name)))); ?>(),
+<?php } else { ?>
+                    'value' => $model-><?= $name; ?>,
+<?php } ?>
+                ],
     <?php }
 } else {
     foreach ($generator->getTableSchema()->columns as $column) {
@@ -47,7 +51,11 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
             [
                 'attribute' => '<?= $column->name; ?>',
                 'format' => 'raw',
-                'value' => $model-><?= $column->name; ?>,
+<?php if ($generator->getIsFileType($column->name)) { ?>
+                    'value' => $model->get<?= str_replace(' ', '', ucwords(str_replace('_', ' ', str_replace('id_', '', $column->name)))); ?>(),
+<?php } else { ?>
+                    'value' => $model-><?= $column->name; ?>,
+<?php } ?>
             ],
     <?php }
 }
